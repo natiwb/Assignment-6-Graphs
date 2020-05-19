@@ -37,7 +37,8 @@ public class Graph_GFA_Test {
 	}
 
 	@Test
-	public void testGetEdge() {
+	public void testGetEdge() 
+	{
 		assertEquals(new Road(town[1], town[0],2, "Road_1"), graph.getEdge(town[1], town[0]));
 	}
 

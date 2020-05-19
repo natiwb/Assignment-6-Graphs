@@ -99,10 +99,10 @@ Returns:
 	{
 		if(o.name.equalsIgnoreCase(this.name)) 
 		{
-			return 1;
+			return 0;
 		}
 		else
-			return 0;
+			return 1;
 	}
 
 	/*
@@ -137,8 +137,15 @@ r - road object to compare it to
 	}
 	@Override
 	public int compareTo(Road o) {
-		// TODO Auto-generated method stub
-		return 0;
+		if(this.getSource().name==o.source.name&&this.destination.name==o.destination.name) 
+		{
+			return 0;
+		}
+		else if(this.getSource().name==o.destination.name&&this.destination.name==o.source.name) 
+		{
+			return 0;
+		}
+		return 1;
 	}
 
 }

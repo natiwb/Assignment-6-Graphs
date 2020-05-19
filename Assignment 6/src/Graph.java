@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,7 +26,9 @@ public class Graph implements GraphInterface<Town,Road>
 	@Override
 	public Road getEdge(Town sourceVertex, Town destinationVertex)
 	{
-		if(sourceVertex == null || destinationVertex == null) {
+		if(sourceVertex == null||destinationVertex == null)
+		{
+
 			return null;
 		}
 		else 
@@ -42,9 +45,9 @@ public class Graph implements GraphInterface<Town,Road>
 
 				for (Road edge : r)
 				{
-					if(edge.equals(r)) 
+					if(edge.compareTo(temp)==0) 
 					{
-						return edge;
+						return temp;
 					}
 				}
 			}	
@@ -55,14 +58,60 @@ public class Graph implements GraphInterface<Town,Road>
 
 
 	@Override
-	public Road addEdge(Town sourceVertex, Town destinationVertex, int weight, String description) {
-		// TODO Auto-generated method stub
+	public Road addEdge(Town sourceVertex, Town destinationVertex, int weight, String description)
+	{
+		if(sourceVertex == null || destinationVertex == null)
+			throw  new NullPointerException("Cannot be Null");
+
+		else {
+
+
+			Road temp = new Road(sourceVertex,  destinationVertex,  weight,  description);
+
+			
+			destinationVertex = this.update(destinationVertex);
+            sourceVertex = this.update(sourceVertex);
+			
+			roads.get(sourceVertex).add(temp);
+			roads.get(destinationVertex).add(temp);
+
+			return temp;
+		}
+
+	}
+
+	private Town update(Town vertex) 
+	{
+
+		for (Town e : roads.keySet()) 
+		{
+			if(e.compareTo(vertex)==0)
+			{	
+				return e;
+			}
+		}
 		return null;
 	}
 
+	/**
+	 * Returns true if and only if this graph contains an edge going
+	 * from the source vertex to the target vertex. In undirected graphs the
+	 * same result is obtained when source and target are inverted. If any of
+	 * the specified vertices does not exist in the graph, or if is
+	 * null, returns false.
+	 *
+	 * @param sourceVertex source vertex of the edge.
+	 * @param destinationVertex target vertex of the edge.
+	 *
+	 * @return true if this graph contains the specified edge.
+	 */
 	@Override
-	public boolean addVertex(Town v) {
-		// TODO Auto-generated method stub
+	public boolean addVertex(Town v) 
+	{
+		if(!roads.containsKey(v)) {
+			roads.put(v,new HashSet<Road>());
+			return true;
+		}
 		return false;
 	}
 	/*
@@ -101,18 +150,18 @@ public class Graph implements GraphInterface<Town,Road>
 		return false;
 	}
 	/**
-     * Returns a set of all edges touching the specified vertex (also
-     * referred to as adjacent vertices). If no edges are
-     * touching the specified vertex returns an empty set.
-     *
-     * @param vertex the vertex for which a set of touching edges is to be
-     * returned.
-     *
-     * @return a set of all edges touching the specified vertex.
-     *
-     * @throws IllegalArgumentException if vertex is not found in the graph.
-     * @throws NullPointerException if vertex is null.
-     */
+	 * Returns a set of all edges touching the specified vertex (also
+	 * referred to as adjacent vertices). If no edges are
+	 * touching the specified vertex returns an empty set.
+	 *
+	 * @param vertex the vertex for which a set of touching edges is to be
+	 * returned.
+	 *
+	 * @return a set of all edges touching the specified vertex.
+	 *
+	 * @throws IllegalArgumentException if vertex is not found in the graph.
+	 * @throws NullPointerException if vertex is null.
+	 */
 	@Override
 	public Set<Road> edgesOf(Town vertex)
 	{
@@ -122,22 +171,22 @@ public class Graph implements GraphInterface<Town,Road>
 
 	/*
 	 * /**
-     * Removes an edge going from source vertex to target vertex, if such
-     * vertices and such edge exist in this graph. 
-     * 
-     * If weight >- 1 it must be checked
-     * If description != null, it must be checked 
-     * 
-     * Returns the edge if removed
-     * or null otherwise.
-     *
-     * @param sourceVertex source vertex of the edge.
-     * @param destinationVertex target vertex of the edge.
-     * @param weight weight of the edge
-     * @param description description of the edge
-     *
-     * @return The removed edge, or null if no edge removed.
-     */
+	 * Removes an edge going from source vertex to target vertex, if such
+	 * vertices and such edge exist in this graph. 
+	 * 
+	 * If weight >- 1 it must be checked
+	 * If description != null, it must be checked 
+	 * 
+	 * Returns the edge if removed
+	 * or null otherwise.
+	 *
+	 * @param sourceVertex source vertex of the edge.
+	 * @param destinationVertex target vertex of the edge.
+	 * @param weight weight of the edge
+	 * @param description description of the edge
+	 *
+	 * @return The removed edge, or null if no edge removed.
+	 */
 
 	@Override
 	public Road removeEdge(Town sourceVertex, Town destinationVertex, int weight, String description) 
@@ -146,7 +195,7 @@ public class Graph implements GraphInterface<Town,Road>
 			return null;
 		}
 		Road r = new Road(sourceVertex,destinationVertex,weight,description);
-		
+
 		if(!roads.get(sourceVertex).contains(r)) 
 		{
 			return null;
@@ -155,49 +204,80 @@ public class Graph implements GraphInterface<Town,Road>
 		{
 			return null;
 		}
-		
+
 		else 
 		{	
 			roads.get(destinationVertex).remove(r);		
 			roads.get(sourceVertex).remove(r);
 			return r;
 		}
-		
+
 	}
 
 	@Override
-	public boolean removeVertex(Town v) {
-		// TODO Auto-generated method stub
+	public boolean removeVertex(Town v)
+	{
+
 		return false;
 	}
 
+	/**
+	 * Find the shortest path from the sourceVertex to the destinationVertex
+	 * call the dijkstraShortestPath with the sourceVertex
+	 * @param sourceVertex starting vertex
+	 * @param destinationVertex ending vertex
+	 * @return An arraylist of Strings that describe the path from sourceVertex
+	 * to destinationVertex
+	 * They will be in the format: startVertex "via" Edge "to" endVertex weight
+	 * As an example: if finding path from Vertex_1 to Vertex_10, the ArrayList<String>
+	 * would be in the following format(this is a hypothetical solution):
+	 * Vertex_1 via Edge_2 to Vertex_3 4 (first string in ArrayList)
+	 * Vertex_3 via Edge_5 to Vertex_8 2 (second string in ArrayList)
+	 * Vertex_8 via Edge_9 to Vertex_10 2 (third string in ArrayList)
+	 */   
 	@Override
 	public ArrayList<String> shortestPath(Town sourceVertex, Town destinationVertex) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
+	/**
+	 * Dijkstra's Shortest Path Method.  Internal structures are built which
+	 * hold the ability to retrieve the path, shortest distance from the
+	 * sourceVertex to all the other vertices in the graph, etc.
+	 * @param sourceVertex the vertex to find shortest path from
+	 * 
+	 */
 	@Override
-	public void dijkstraShortestPath(Town sourceVertex) {
-		// TODO Auto-generated method stub
+	public void dijkstraShortestPath(Town sourceVertex) 
+	{
+
 
 	}
 
-/**
-     * Returns a set of the edges contained in this graph. The set is backed by
-     * the graph, so changes to the graph are reflected in the set. If the graph
-     * is modified while an iteration over the set is in progress, the results
-     * of the iteration are undefined.
-     *
-     *
-     * @return a set of the edges contained in this graph.
-     */
+	/**
+	 * Returns a set of the edges contained in this graph. The set is backed by
+	 * the graph, so changes to the graph are reflected in the set. If the graph
+	 * is modified while an iteration over the set is in progress, the results
+	 * of the iteration are undefined.
+	 *
+	 *
+	 * @return a set of the edges contained in this graph.
+	 */
 
 	@Override
 	public Set<Road> edgeSet() 
 	{
+		Set<Road> setOfEdges = new HashSet<Road>();
+
+	
+		for (Set<Road> road:roads.values()) 
+		{
+			setOfEdges.addAll(road);
+		}
 		
-		return null;
+		return setOfEdges;
+
 	}
 
 

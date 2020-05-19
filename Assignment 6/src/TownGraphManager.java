@@ -1,28 +1,53 @@
 import java.util.ArrayList;
+import java.util.Set;
 
-public class TownGraphManager implements TownGraphManagerInterface() 
+public class TownGraphManager implements TownGraphManagerInterface
 {
+	//Your TownGraphManager will hold an object of your Graph. Implement the TownGraphManagerInterface
+	 Graph tGraph;
+
+	public TownGraphManager() 
+	{
+		tGraph=new Graph();
+	}
 	@Override
 	public boolean addRoad(String town1, String town2, int weight, String roadName) {
-		// TODO Auto-generated method stub
-		return false;
+		Town a = this.getTown(town1);
+		Town b = this.getTown(town2);
+		
+		Road r = tGraph.addEdge(a, b, weight, roadName);
+		return r != null;
 	}
 
 	@Override
 	public String getRoad(String town1, String town2) {
-		// TODO Auto-generated method stub
-		return null;
+		Road r = tGraph.getEdge(new Town(town1), new Town(town2));
+		if (r == null) {
+			return null;
+		}
+		return r.getName();
 	}
 
 	@Override
-	public boolean addTown(String v) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean addTown(String v) 
+	{
+		return tGraph.addVertex(new Town(v));
 	}
 
 	@Override
 	public Town getTown(String name) {
-		// TODO Auto-generated method stub
+		if (!(tGraph.containsVertex(new Town(name)))) 
+		{
+			return null;
+		}
+		Set<Town> s = tGraph.roads.keySet();
+
+		for (Town town : s) {
+
+			if (town.equals(new Town(name))) {
+				return town;
+			}
+		}
 		return null;
 	}
 
@@ -39,9 +64,17 @@ public class TownGraphManager implements TownGraphManagerInterface()
 	}
 
 	@Override
-	public ArrayList<String> allRoads() {
-		// TODO Auto-generated method stub
-		return null;
+	public ArrayList<String> allRoads()
+	{
+		ArrayList<String> combo = new ArrayList<String>();
+		
+		Set<Road> allR = tGraph.edgeSet();
+		
+		for (Road newRoad : allR) 
+		{
+			combo.add(newRoad.getName());
+		}
+		return combo;
 	}
 
 	@Override

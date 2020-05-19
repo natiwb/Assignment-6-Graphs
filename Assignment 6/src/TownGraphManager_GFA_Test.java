@@ -35,6 +35,8 @@ public class TownGraphManager_GFA_Test {
 	@Test
 	public void testAddRoad() {
 		ArrayList<String> roads = graph.allRoads();
+		System.out.println(roads);
 		assertEquals("Road_1", roads.get(0));
+		
 	}
 }
